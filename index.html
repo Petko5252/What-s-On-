@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What's On?</title>
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f0f0;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 500px;
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    h1 {
+      font-size: 24px;
+      text-align: center;
+      color: #007BFF;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    input[type="text"], input[type="date"] {
+      width: 100%;
+      padding: 8px; /* Reduced padding */
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px; /* Reduced font size */
+      background-color: #f9f9f9;
+      box-sizing: border-box;
+    }
+
+    button {
+      padding: 14px;
+      background-color: #007BFF;
+      color: white;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .flexible-btn {
+      padding: 14px;
+      background-color: #28a745;
+      color: white;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-top: 10px;
+    }
+
+    .flexible-btn:hover {
+      background-color: #218838;
+    }
+
+    .event-list {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .event {
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      display: flex;
+      padding: 15px;
+      gap: 15px;
+      align-items: center;
+      transition: transform 0.2s ease-in-out;
+    }
+
+    .event:hover {
+      transform: translateY(-5px);
+    }
+
+    .event img {
+      width: 80px;
+      height: 80px;
+      border-radius: 8px;
+    }
+
+    .event .details {
+      flex-grow: 1;
+    }
+
+    .event h3 {
+      font-size: 16px;
+      margin: 0 0 5px;
+      color: #333;
+      font-weight: 600;
+    }
+
+    .event p {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .add-to-calendar {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 8px 16px;
+      background-color: #007BFF;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+
+    .add-to-calendar:hover {
+      background-color: #0056b3;
+    }
+
+    .fab {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      background-color: #007BFF;
+      border-radius: 50%;
+      padding: 16px;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s ease;
+    }
+
+    .fab:hover {
+      transform: scale(1.1);
+    }
+
+    /* Android Optimization */
+    @media (max-width: 600px) {
+      .container {
+        width: 100%;
+        max-width: 100%;
+        padding: 15px;
+      }
+
+      h1 {
+        font-size: 20px;
+      }
+
+      button, .flexible-btn {
+        font-size: 16px;
+      }
+
+      .event img {
+        width: 70px;
+        height: 70px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>What's On?</h1>
+
+    <div class="form-group">
+      <label for="city">Enter a City or Country:</label>
+      <input type="text" id="city" placeholder="e.g., Tokyo, Japan">
+    </div>
+
+    <div class="form-group">
+      <label for="eventDate">Pick a Date (Optional):</label>
+      <input type="date" id="eventDate">
+    </div>
+
+    <button id="searchBtn">Find Events</button>
+    <button id="flexibleBtn" class="flexible-btn">I'm Flexible</button>
+
+    <div class="event-list" id="eventList">
+      <!-- Events will appear here -->
+    </div>
+  </div>
+
+  <button class="fab" id="searchFab">&#128269;</button>
+
+  <!-- Ko-fi Widget Code -->
+  <script src="https://storage.ko-fi.com/cdn/scripts/overlay-widget.js"></script>
+  <script>
+    kofiWidgetOverlay.draw('petkodev', {
+      'type': 'floating-chat',
+      'floating-chat.donateButton.text': 'Support me',
+      'floating-chat.donateButton.background-color': '#00b9fe',
+      'floating-chat.donateButton.text-color': '#fff'
+    });
+  </script>
+
+  <script>
+    const API_KEY = "SxcrVU2ckv8HydnA0s1FC9K8uV7blQXv"; // Updated API key
+    const BASE_URL = "https://app.ticketmaster.com/discovery/v2/events.json";
+
+    const cityInput = document.getElementById("city");
+    const eventDateInput = document.getElementById("eventDate");
+    const searchBtn = document.getElementById("searchBtn");
+    const flexibleBtn = document.getElementById("flexibleBtn");
+    const eventList = document.getElementById("eventList");
+    const searchFab = document.getElementById("searchFab");
+
+    // Function to display events
+    function displayEvents(events) {
+      eventList.innerHTML = "";
+
+      if (!events || events.length === 0) {
+        eventList.innerHTML = "<p>No events found for this location.</p>";
+        return;
+      }
+
+      events.forEach(event => {
+        const eventDiv = document.createElement("div");
+        eventDiv.classList.add("event");
+
+        const imageUrl = event.images && event.images.length > 0 ? event.images[0].url : "https://via.placeholder.com/100";
+        const eventDate = event.dates.start.localDate
+          ? new Date(event.dates.start.localDate).toLocaleString()
+          : "Date not available";
+        const venue = event._embedded && event._embedded.venues && event._embedded.venues[0]
+          ? event._embedded.venues[0].name
+          : "Venue not available";
+
+        const googleCalendarLink = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.name)}&dates=${event.dates.start.localDate}T120000Z/${event.dates.start.localDate}T140000Z&details=${encodeURIComponent(event.name)}&location=${encodeURIComponent(venue)}`;
+
+        eventDiv.innerHTML = `
+          <img src="${imageUrl}" alt="${event.name}">
+          <div class="details">
+            <h3>${event.name}</h3>
+            <p>Date: ${eventDate}</p>
+            <p>Location: ${venue}</p>
+            <a href="${googleCalendarLink}" target="_blank" class="add-to-calendar">Add to Google Calendar</a>
+          </div>
+        `;
+        eventList.appendChild(eventDiv);
+      });
+    }
+
+    // Fetch events from Ticketmaster API
+    async function fetchEvents(location, date) {
+      try {
+        let url = `${BASE_URL}?apikey=${API_KEY}&city=${encodeURIComponent(location)}`; 
+        if (date) {
+          url += `&startDateTime=${date}T00:00:00Z&endDateTime=${date}T23:59:59Z`;
+        }
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (data._embedded && data._embedded.events && data._embedded.events.length > 0) {
+          displayEvents(data._embedded.events);
+        } else {
+          displayEvents([]);
+        }
+      } catch (error) {
+        console.error("Error fetching events:", error);
+        eventList.innerHTML = "<p>There was an error fetching events. Please try again later.</p>";
+      }
+    }
+
+    // Event listener for search button
+    searchBtn.addEventListener("click", () => {
+      const location = cityInput.value.trim();
+      const selectedDate = eventDateInput.value;
+      if (location === "") {
+        alert("Please enter a city or country.");
+        return;
+      }
+      fetchEvents(location, selectedDate);
+    });
+
+    // Event listener for floating action button
+    searchFab.addEventListener("click", () => {
+      const location = cityInput.value.trim();
+      const selectedDate = eventDateInput.value;
+      if (location === "") {
+        alert("Please enter a city or country.");
+        return;
+      }
+      fetchEvents(location, selectedDate);
+    });
+
+    // Event listener for the "I'm Flexible" button
+    flexibleBtn.addEventListener("click", () => {
+      const location = cityInput.value.trim();
+      const selectedDate = eventDateInput.value;
+      if (location === "") {
+        alert("Please enter a city or country.");
+        return;
+      }
+      fetchEvents(location, selectedDate);
+    });
+  </script>
+</body>
+</html>
