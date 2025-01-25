@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>What's On?</title>
   <script src='https://storage.ko-fi.com/cdn/scripts/overlay-widget.js'></script>
-<script>
-  kofiWidgetOverlay.draw('petkodev', {
-    'type': 'floating-chat',
-    'floating-chat.donateButton.text': 'Support me',
-    'floating-chat.donateButton.background-color': '#00b9fe',
-    'floating-chat.donateButton.text-color': '#fff'
-  });
-</script>
+  <script>
+    kofiWidgetOverlay.draw('petkodev', {
+      'type': 'floating-chat',
+      'floating-chat.donateButton.text': 'Support me',
+      'floating-chat.donateButton.background-color': '#00b9fe',
+      'floating-chat.donateButton.text-color': '#fff'
+    });
+  </script>
   <style>
     body {
       font-family: 'Roboto', sans-serif;
@@ -57,10 +57,10 @@
 
     input[type="text"], input[type="date"] {
       width: 100%;
-      padding: 8px; /* Reduced padding */
+      padding: 8px; 
       border: 1px solid #ddd;
       border-radius: 8px;
-      font-size: 14px; /* Reduced font size */
+      font-size: 14px;
       background-color: #f9f9f9;
       box-sizing: border-box;
     }
@@ -141,7 +141,7 @@
       color: #666;
     }
 
-    .add-to-calendar {
+    .add-to-calendar, .buy-ticket {
       display: inline-block;
       margin-top: 10px;
       padding: 8px 16px;
@@ -151,8 +151,12 @@
       border-radius: 5px;
     }
 
-    .add-to-calendar:hover {
+    .add-to-calendar:hover, .buy-ticket:hover {
       background-color: #0056b3;
+    }
+
+    .buy-ticket {
+      background-color: #28a745;
     }
 
     .fab {
@@ -267,6 +271,8 @@
 
         const googleCalendarLink = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.name)}&dates=${event.dates.start.localDate}T120000Z/${event.dates.start.localDate}T140000Z&details=${encodeURIComponent(event.name)}&location=${encodeURIComponent(venue)}`;
 
+        const buyTicketLink = event.url || "#"; // Use event URL for buying tickets
+
         eventDiv.innerHTML = `
           <img src="${imageUrl}" alt="${event.name}">
           <div class="details">
@@ -274,6 +280,7 @@
             <p>Date: ${eventDate}</p>
             <p>Location: ${venue}</p>
             <a href="${googleCalendarLink}" target="_blank" class="add-to-calendar">Add to Google Calendar</a>
+            <a href="${buyTicketLink}" target="_blank" class="buy-ticket">Buy Tickets</a> <!-- Buy Tickets Link -->
           </div>
         `;
         eventList.appendChild(eventDiv);
@@ -340,5 +347,14 @@
       fetchEvents(location, selectedDate);
     });
   </script>
+  <script src='https://storage.ko-fi.com/cdn/scripts/overlay-widget.js'></script>
+<script>
+  kofiWidgetOverlay.draw('petkodev', {
+    'type': 'floating-chat',
+    'floating-chat.donateButton.text': 'Support me',
+    'floating-chat.donateButton.background-color': '#00b9fe',
+    'floating-chat.donateButton.text-color': '#fff'
+  });
+</script>
 </body>
 </html>
